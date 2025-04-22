@@ -20,7 +20,7 @@ export default function HomePage() {
     <div className="max-w-2xl mx-auto bg-white p-8 rounded shadow">
       <h1 className="text-5xl font-extrabold mb-10 text-center">Home</h1>
       <section className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Balance</h2>
+        <h2 className="text-lg font-semibold mb-2">Token Balance</h2>
         <div className="text-3xl font-bold text-green-700">৳ {balance.toFixed(2)}</div>
       </section>
       <section className="mb-6">
@@ -46,9 +46,9 @@ export default function HomePage() {
             <span className="text-2xl font-bold text-blue-700">{stats.month}</span>
             <span className="text-gray-600 text-sm">Meals this month</span>
           </div>
-          <div className="bg-yellow-100 rounded p-4 flex flex-col items-center shadow-sm col-span-2">
+          {/* <div className="bg-yellow-100 rounded p-4 flex flex-col items-center shadow-sm col-span-2">
             <span className="text-lg font-semibold text-yellow-700">Favorite: {stats.favoriteMeal}</span>
-          </div>
+          </div> */}
           <div className="bg-purple-100 rounded p-4 flex flex-col items-center shadow-sm">
             <span className="text-lg font-bold text-purple-700">৳ {stats.totalSpent}</span>
             <span className="text-gray-600 text-sm">Total Spent</span>

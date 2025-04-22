@@ -8,7 +8,7 @@ const tokenOptions = [
   { days: 30, label: "30 days", amount: 2400 },
 ];
 const paymentOptions = [
-  { value: "card", label: "Card", logo: "/vercel.svg" },
+  { value: "card", label: "Card", logo: "/visa.jpeg" },
   { value: "bkash", label: "Bkash", logo: "/bkash.png" },
   { value: "nagad", label: "Nagad", logo: "/nagad.png" },
   { value: "rocket", label: "Rocket", logo: "/rocket.png" },
