@@ -191,14 +191,14 @@ export default function AdminDashboardPage() {
         </div>
       )}
       <section className="mb-6">
-        <h2 className="text-lg font-semibold mb-2">Meal/Budget Tracking</h2>
-        <div className="text-gray-700">Total Meals Served: 0</div>
-        <div className="text-gray-700">Total Revenue: ৳ 0.00</div>
-        <div className="text-gray-700">Total Expenditure: ৳ 0.00</div>
+        <h2 className="text-lg font-semibold mb-2"> Money Statics</h2>
+        <div className="text-gray-700">Excess Money: ৳ 10000</div>
+        <div className="text-gray-700">Total Expenditure: ৳ 420420</div>
       </section>
       <section>
         <h2 className="text-lg font-semibold mb-2">Meal Statistics</h2>
-        <div className="text-gray-700">No statistics available.</div>
+        <div className="text-gray-700">Border: 600</div>
+        <div className="text-gray-700">Total Meals Served: 1246</div>
       </section>
     </div>
   );
