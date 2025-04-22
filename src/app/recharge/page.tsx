@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Image from "next/image";
 
 const tokenOptions = [
   { days: 7, label: "7 days", amount: 800 },
@@ -77,7 +78,7 @@ export default function RechargePage() {
                 className={`flex items-center gap-2 border p-2 rounded hover:bg-blue-50 ${paymentMethod.value === opt.value ? "ring-2 ring-blue-400" : ""}`}
                 onClick={() => setPaymentMethod(opt)}
               >
-                <img src={opt.logo} alt={opt.label} className="w-6 h-6" />
+                <Image src={opt.logo} alt={opt.label} width={24} height={24} className="w-6 h-6" />
                 <span>{opt.label}</span>
               </button>
             ))}

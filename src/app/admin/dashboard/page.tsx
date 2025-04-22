@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 type Recharge = { date: string; amount: number };
 type Student = {
@@ -73,13 +74,11 @@ const MENU_OPTIONS = [
 export default function AdminDashboardPage() {
   const [inputId, setInputId] = useState('');
   const [student, setStudent] = useState<Student | null>(null);
-  const [showView, setShowView] = useState(false);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const [updateForm, setUpdateForm] = useState<Student>({ ...students[0] });
   const [sidebarMode, setSidebarMode] = useState<null | 'view' | 'update'>(null);
   const [notFound, setNotFound] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState<string[]>([]);
   const [finalMenu, setFinalMenu] = useState<string[]>([]);
+  const [updateForm, setUpdateForm] = useState<Student | undefined>(undefined);
 
   const handleValidate = () => {
     const found = students.find(s => s.id === inputId);
@@ -108,13 +107,15 @@ export default function AdminDashboardPage() {
   const closeSidebar = () => setSidebarMode(null);
 
   const handleUpdateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!updateForm) return;
     setUpdateForm({ ...updateForm, [e.target.name]: e.target.value });
   };
 
   const handleUpdateSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!updateForm) return;
     setStudent({ ...updateForm });
-    setShowUpdate(false);
+    setSidebarMode(null);
   };
 
   return (
@@ -182,11 +183,11 @@ export default function AdminDashboardPage() {
                 </div>
               </>
             )}
-            {sidebarMode === 'update' && (
+            {sidebarMode === 'update' && updateForm && (
               <>
                 <h3 className="text-xl font-bold mb-4">Update Student Info</h3>
                 <form onSubmit={handleUpdateSubmit} className="space-y-3">
-                <div className="mb-2"><b>Tokens Left</b> </div>
+                  <div className="mb-2"><b>Tokens Left</b> </div>
                   <input name="token" value={updateForm.token} onChange={handleUpdateChange} className="border p-2 rounded w-full" placeholder="Token Number" />
                   <div className="mb-2"><b>Pin:</b> </div>
                   <input name="pin" value={updateForm.pin} onChange={handleUpdateChange} className="border p-2 rounded w-full" placeholder="PIN" />
@@ -216,7 +217,7 @@ export default function AdminDashboardPage() {
       </section>
       {/* Menu selection section */}
       <div className="mb-8">
-        <h2 className="text-2xl font-bold mb-4">Today's Menu Selection</h2>
+        <h2 className="text-2xl font-bold mb-4">Today&apos;s Menu Selection</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           {MENU_OPTIONS.map(option => (
             <label
@@ -227,10 +228,12 @@ export default function AdminDashboardPage() {
                   : "border-gray-300"
               }`}
             >
-              <img
+              <Image
                 src={option.img}
                 alt={option.name}
-                className="w-16 h-16 object-cover rounded bg-gray-200"
+                width={64}
+                height={64}
+                className="object-cover rounded bg-gray-200"
               />
               <span>{option.name}</span>
               <input
@@ -259,7 +262,7 @@ export default function AdminDashboardPage() {
       {/* Show selected menu */}
       {finalMenu.length > 0 && (
         <div className="mb-8">
-          <h3 className="text-xl font-semibold mb-2">Today's Final Menu:</h3>
+          <h3 className="text-xl font-semibold mb-2">Today&apos;s Final Menu:</h3>
           <ul className="list-disc pl-6">
             {finalMenu.map(item => (
               <li key={item}>{item}</li>

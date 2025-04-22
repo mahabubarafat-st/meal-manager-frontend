@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { api } from "@/lib/utils";
 
 const TING_SOUND = "/ting.mp3";
