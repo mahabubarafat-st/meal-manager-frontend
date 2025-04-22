@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from 'react';
-import { api, setAuth } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 function showToast(message: string) {
