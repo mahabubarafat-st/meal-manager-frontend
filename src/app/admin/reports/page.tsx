@@ -6,10 +6,15 @@ export default function AdminReportsPage() {
   const spent = 37250;
   const remaining = budget - spent;
   const mealsMonthly = [
-    { month: "Jan", count: 320 },
-    { month: "Feb", count: 280 },
+    { month: "Apr", count: 320 },
     { month: "Mar", count: 350 },
-    { month: "Apr", count: 300 },
+    { month: "Feb", count: 280 },
+    { month: "Jan", count: 320 },
+    { month: "Dec", count: 300 },
+    { month: "Nov", count: 280 },
+    { month: "Oct", count: 350 },
+    { month: "Sep", count: 300 },
+    { month: "Aug", count: 300 },
   ];
   const mealsDaily = [
     { day: "Mon", count: 48 },
@@ -19,13 +24,23 @@ export default function AdminReportsPage() {
     { day: "Fri", count: 55 },
     { day: "Sat", count: 40 },
     { day: "Sun", count: 38 },
+    { day: "Mon", count: 48 },
+    { day: "Tue", count: 52 },
+    { day: "Wed", count: 50 },
+    { day: "Thu", count: 47 },
+    { day: "Fri", count: 55 },
+    { day: "Sat", count: 40 },
+    { day: "Sun", count: 38 },
+    { day: "Sun", count: 38 },
   ];
   const avgMealPerDay = (mealsDaily.reduce((a, b) => a + b.count, 0) / mealsDaily.length).toFixed(1);
+  // Dummy data for meals taken today
+  const mealsToday = 53;
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow">
       <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Reports</h1>
-      <section className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="mb-8 grid grid-cols-1 md:grid-cols-4 gap-6">
         <div className="bg-blue-100 rounded p-6 flex flex-col items-center shadow-sm">
           <span className="text-lg text-gray-600">Overall Budget</span>
           <span className="text-2xl font-bold text-blue-700">৳ {budget.toLocaleString()}</span>
@@ -37,6 +52,10 @@ export default function AdminReportsPage() {
         <div className="bg-green-100 rounded p-6 flex flex-col items-center shadow-sm">
           <span className="text-lg text-gray-600">Budget Remaining</span>
           <span className="text-2xl font-bold text-green-700">৳ {remaining.toLocaleString()}</span>
+        </div>
+        <div className="bg-yellow-100 rounded p-6 flex flex-col items-center shadow-sm">
+          <span className="text-lg text-gray-600">Meals Taken Today</span>
+          <span className="text-2xl font-bold text-yellow-700">{mealsToday}</span>
         </div>
       </section>
       <section className="mb-8">
