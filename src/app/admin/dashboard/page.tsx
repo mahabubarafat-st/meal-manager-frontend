@@ -60,6 +60,16 @@ const students: Student[] = [
   },
 ];
 
+const MENU_OPTIONS = [
+  { name: "Rice", img: "/rice.jpeg" },
+  { name: "Khichuri", img: "/khichuri.jpg" },
+  { name: "Dal", img: "/dal.png" },
+  { name: "Chicken Curry", img: "/chiken.jpg" },
+  { name: "Fish Curry", img: "/fish.jpeg" },
+  { name: "Egg Fry", img: "/dimvaji.jpg" },
+  { name: "Vorta", img: "/vorta-platter.jpg" },
+];
+
 export default function AdminDashboardPage() {
   const [inputId, setInputId] = useState('');
   const [student, setStudent] = useState<Student | null>(null);
@@ -68,6 +78,8 @@ export default function AdminDashboardPage() {
   const [updateForm, setUpdateForm] = useState<Student>({ ...students[0] });
   const [sidebarMode, setSidebarMode] = useState<null | 'view' | 'update'>(null);
   const [notFound, setNotFound] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<string[]>([]);
+  const [finalMenu, setFinalMenu] = useState<string[]>([]);
 
   const handleValidate = () => {
     const found = students.find(s => s.id === inputId);
@@ -108,6 +120,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow relative">
       <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Dashboard</h1>
+      {/* Student search/view/update */}
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Scan Student ID</h2>
         <input
@@ -190,6 +203,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+      {/* Meal and Money Stats */}
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2"> Money Statics</h2>
         <div className="text-gray-700">Excess Money: ৳ 10000</div>
@@ -200,6 +214,59 @@ export default function AdminDashboardPage() {
         <div className="text-gray-700">Border: 600</div>
         <div className="text-gray-700">Total Meals Served: 1246</div>
       </section>
+      {/* Menu selection section */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4">Today's Menu Selection</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+          {MENU_OPTIONS.map(option => (
+            <label
+              key={option.name}
+              className={`cursor-pointer border rounded p-2 flex flex-col items-center gap-2 ${
+                selectedMenu.includes(option.name)
+                  ? "border-blue-600 bg-blue-50"
+                  : "border-gray-300"
+              }`}
+            >
+              <img
+                src={option.img}
+                alt={option.name}
+                className="w-16 h-16 object-cover rounded bg-gray-200"
+              />
+              <span>{option.name}</span>
+              <input
+                type="checkbox"
+                checked={selectedMenu.includes(option.name)}
+                onChange={e => {
+                  if (e.target.checked) {
+                    setSelectedMenu([...selectedMenu, option.name]);
+                  } else {
+                    setSelectedMenu(selectedMenu.filter(n => n !== option.name));
+                  }
+                }}
+                className="mt-1"
+              />
+            </label>
+          ))}
+        </div>
+        <button
+          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          onClick={() => setFinalMenu(selectedMenu)}
+          disabled={selectedMenu.length === 0}
+        >
+          Select Menu
+        </button>
+      </div>
+      {/* Show selected menu */}
+      {finalMenu.length > 0 && (
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold mb-2">Today's Final Menu:</h3>
+          <ul className="list-disc pl-6">
+            {finalMenu.map(item => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
