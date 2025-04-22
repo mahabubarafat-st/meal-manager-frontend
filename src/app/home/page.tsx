@@ -2,11 +2,11 @@ export default function HomePage() {
   // Fake data
   const balance = 1250.75;
   const mealHistory = [
-    { date: "2025-04-21", meal: "Lunch", amount: 60 },
-    { date: "2025-04-20", meal: "Dinner", amount: 70 },
-    { date: "2025-04-19", meal: "Breakfast", amount: 40 },
-    { date: "2025-04-18", meal: "Lunch", amount: 60 },
-    { date: "2025-04-17", meal: "Dinner", amount: 70 },
+    { date: "2025-04-21", meal: "Lunch", amount: 40 },
+    { date: "2025-04-21", meal: "Dinner", amount: 40 },
+    // { date: "2025-04-19", meal: "Breakfast", amount: 40 },
+    { date: "2025-04-19", meal: "Lunch", amount: 40 },
+    { date: "2025-04-19", meal: "Dinner", amount: 40 },
   ];
   const stats = {
     week: 10,
