@@ -57,7 +57,10 @@ export default function RootLayout({
         </div>
         {/* Top Navbar */}
         <nav className="relative z-10 w-full bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between shadow-sm">
-          <div className="text-2xl font-bold tracking-tight">Meal Manager</div>
+          <div className="flex items-center gap-3">
+            <img src="/cuet.png" alt="CUET Logo" className="h-10 w-10 object-contain" />
+            <span className="text-2xl font-bold tracking-tight">Meal Manager</span>
+          </div>
           <div className="flex items-center gap-2">
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row gap-6">
