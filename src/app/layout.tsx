@@ -70,7 +70,21 @@ export default function RootLayout({
                 <NavigationMenuItem>
                   <Link href="/settings" className="hover:text-primary transition-colors">Settings</Link>
                 </NavigationMenuItem>
-                {/* Optionally, add a logout or login link */}
+                <NavigationMenuItem>
+                  <Link href="/login" className="hover:text-primary transition-colors">Student Login</Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/admin/login" className="hover:text-primary transition-colors">Admin Login</Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/admin/dashboard" className="hover:text-primary transition-colors">Admin Dashboard</Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/admin/reports" className="hover:text-primary transition-colors">Admin Reports</Link>
+                </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/admin/settings" className="hover:text-primary transition-colors">Admin Settings</Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
             <ThemeToggle />
