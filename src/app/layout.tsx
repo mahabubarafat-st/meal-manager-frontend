@@ -65,41 +65,66 @@ export default function RootLayout({
             <NavigationMenu>
               <NavigationMenuList className="flex flex-row gap-6">
                 <NavigationMenuItem>
-                  <Link href="/home" className="hover:text-primary transition-colors">Home</Link>
+                  <Link href="/home" className="nav-link">Home</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/recharge" className="hover:text-primary transition-colors">Recharge</Link>
+                  <Link href="/recharge" className="nav-link">Recharge</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/settings" className="hover:text-primary transition-colors">Settings</Link>
+                  <Link href="/settings" className="nav-link">Settings</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/login" className="hover:text-primary transition-colors">Student Login</Link>
+                  <Link href="/login" className="nav-link">Student Login</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/admin/login" className="hover:text-primary transition-colors">Admin Login</Link>
+                  <Link href="/admin/login" className="nav-link">Admin Login</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/admin/dashboard" className="hover:text-primary transition-colors">Admin Dashboard</Link>
+                  <Link href="/admin/dashboard" className="nav-link">Admin Dashboard</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/admin/reports" className="hover:text-primary transition-colors">Admin Reports</Link>
+                  <Link href="/admin/reports" className="nav-link">Admin Reports</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/admin/settings" className="hover:text-primary transition-colors">Admin Settings</Link>
+                  <Link href="/admin/settings" className="nav-link">Admin Settings</Link>
                 </NavigationMenuItem>
                 <NavigationMenuItem>
-                  <Link href="/hall-dashboard" className="hover:text-primary transition-colors">Hall Dining Dashboard</Link>
+                  <Link href="/hall-dashboard" className="nav-link">Hall Dining Dashboard</Link>
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-            <ThemeToggle />
           </div>
         </nav>
         {/* Main Content */}
         <main className="relative z-10 p-10">
           {children}
         </main>
+        <style jsx global>{`
+          .nav-link {
+            position: relative;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-weight: 500;
+            outline: none;
+            box-shadow: none;
+            text-decoration: none;
+          }
+          .nav-link:active {
+            background: #e0e7ff;
+            color: #3730a3;
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px 0 #a5b4fc55;
+          }
+          .nav-link:focus {
+            box-shadow: 0 0 0 2px #6366f1;
+          }
+          .nav-link:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+            text-decoration: none;
+          }
+        `}</style>
       </body>
     </html>
   );
