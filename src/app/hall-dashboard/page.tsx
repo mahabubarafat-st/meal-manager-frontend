@@ -1,8 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { api } from "@/lib/utils";
 
 const TING_SOUND = "/ting.mp3";
+const MENU_OPTIONS = [
+  { name: "Rice", img: "/rice.jpeg" },
+  { name: "Khichuri", img: "/khichuri.jpg" },
+  { name: "Dal", img: "/dal.png" },
+  { name: "Chicken Curry", img: "/chiken.jpg" },
+  { name: "Fish Curry", img: "/fish.jpeg" },
+  { name: "Egg Fry", img: "/dimvaji.jpg" },
+  { name: "Vorta", img: "/vorta-platter.jpg" },
+];
 
 interface MealCard {
   studentId: string;
@@ -15,6 +25,15 @@ export default function HallDashboardPage() {
   const [studentId, setStudentId] = useState("");
   const [cards, setCards] = useState<MealCard[]>([]);
   const [count, setCount] = useState(0);
+  const [finalMenu, setFinalMenu] = useState<string[]>([]);
+  const [showMenuSidebar, setShowMenuSidebar] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const menu = localStorage.getItem('finalMenu');
+      if (menu) setFinalMenu(JSON.parse(menu));
+    }
+  }, []);
 
   // Dummy name/token generator
   function getStudentInfo(id: string) {
@@ -93,6 +112,43 @@ export default function HallDashboardPage() {
           </div>
         ))}
       </div>
+      <button
+        className="fixed top-1/2 right-0 z-40 bg-blue-600 text-white px-4 py-2 rounded-l hover:bg-blue-700 transition"
+        style={{ transform: 'translateY(-50%)' }}
+        onClick={() => setShowMenuSidebar(true)}
+      >
+        Show Today's Menu
+      </button>
+      {/* Sidebar for Today's Menu */}
+      {showMenuSidebar && (
+        <div className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 transition-transform duration-300 flex flex-col">
+          <button
+            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700"
+            onClick={() => setShowMenuSidebar(false)}
+            aria-label="Close menu sidebar"
+          >
+            &times;
+          </button>
+          <div className="p-8 pt-12 flex-1 flex flex-col items-center">
+            <h2 className="text-2xl font-bold mb-4 text-center">Today's Menu</h2>
+            <div className="flex flex-col gap-4 items-center">
+              {finalMenu.length === 0 ? (
+                <span className="text-gray-500">No menu selected yet.</span>
+              ) : (
+                finalMenu.map(item => {
+                  const menu = MENU_OPTIONS.find(m => m.name === item);
+                  return menu ? (
+                    <div key={menu.name} className="flex flex-col items-center">
+                      <Image src={menu.img} alt={menu.name} width={64} height={64} className="rounded object-cover mb-1" />
+                      <span className="font-semibold text-lg">{menu.name}</span>
+                    </div>
+                  ) : null;
+                })
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
