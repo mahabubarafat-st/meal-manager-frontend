@@ -3,7 +3,7 @@ import React from 'react';
 export default function SettingsPage() {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Settings</h1>
       <form className="flex flex-col gap-4">
         <label htmlFor="email" className="font-medium">Email</label>
         <input id="email" name="email" type="email" className="border p-2 rounded" placeholder="Update your email" />

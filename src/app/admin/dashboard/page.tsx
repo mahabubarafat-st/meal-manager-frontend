@@ -1,7 +1,7 @@
 export default function AdminDashboardPage() {
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Dashboard</h1>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Scan Student ID</h2>
         <input type="text" className="border p-2 rounded w-full" placeholder="Enter or scan student CUET ID" />

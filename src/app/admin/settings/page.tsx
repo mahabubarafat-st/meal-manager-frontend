@@ -3,7 +3,7 @@ import React from 'react';
 export default function AdminSettingsPage() {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Admin Settings</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Settings</h1>
       <form className="flex flex-col gap-4">
         <label htmlFor="mealPlan" className="font-medium">Meal Plan</label>
         <input id="mealPlan" name="mealPlan" type="text" className="border p-2 rounded" placeholder="Update meal plan" />

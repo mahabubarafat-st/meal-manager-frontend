@@ -18,7 +18,7 @@ export default function HomePage() {
 
   return (
     <div className="max-w-2xl mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Home</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Home</h1>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Balance</h2>
         <div className="text-3xl font-bold text-green-700">৳ {balance.toFixed(2)}</div>

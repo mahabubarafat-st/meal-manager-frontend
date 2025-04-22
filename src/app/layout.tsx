@@ -85,6 +85,9 @@ export default function RootLayout({
                 <NavigationMenuItem>
                   <Link href="/admin/settings" className="hover:text-primary transition-colors">Admin Settings</Link>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/hall-dashboard" className="hover:text-primary transition-colors">Hall Dining Dashboard</Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
             <ThemeToggle />

@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Student Login</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Student Login</h1>
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <label htmlFor="studentId" className="font-medium">CUET ID</label>
         <input

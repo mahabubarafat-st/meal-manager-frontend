@@ -1,7 +1,7 @@
 export default function AdminLoginPage() {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Login</h1>
       <form className="flex flex-col gap-4">
         <label htmlFor="adminUsername" className="font-medium">Username</label>
         <input id="adminUsername" name="adminUsername" type="text" className="border p-2 rounded" placeholder="Enter admin username" />

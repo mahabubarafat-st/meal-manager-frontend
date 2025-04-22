@@ -24,7 +24,7 @@ export default function AdminReportsPage() {
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">Admin Reports</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Admin Reports</h1>
       <section className="mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-blue-100 rounded p-6 flex flex-col items-center shadow-sm">
           <span className="text-lg text-gray-600">Overall Budget</span>
