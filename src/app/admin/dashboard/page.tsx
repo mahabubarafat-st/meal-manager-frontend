@@ -14,37 +14,69 @@ type Student = {
   rechargeHistory: Recharge[];
 };
 
-// Dummy student data
-const dummyStudent: Student = {
-  id: '1703037',
-  name: 'Arafat Rahman',
-  token: 60,
-  pin: '4321',
-  email: 'arafat@cuet.ac.bd',
-  room: 'B-201',
-  mealsTaken: 120,
-  tokensLeft: 8,
-  rechargeHistory: [
-    { date: '2025-04-01', amount: 1000 },
-    { date: '2025-03-15', amount: 800 },
-    { date: '2025-02-20', amount: 1200 },
-  ],
-};
+const students: Student[] = [
+  {
+    id: '1703037',
+    name: 'Arafat Rahman',
+    token: 60,
+    pin: '4321',
+    email: 'arafat@cuet.ac.bd',
+    room: 'B-201',
+    mealsTaken: 120,
+    tokensLeft: 8,
+    rechargeHistory: [
+      { date: '2025-04-01', amount: 1000 },
+      { date: '2025-03-15', amount: 800 },
+      { date: '2025-02-20', amount: 1200 },
+    ],
+  },
+  {
+    id: '1703042',
+    name: 'Nusrat Jahan',
+    token: 45,
+    pin: '5678',
+    email: 'nusrat@cuet.ac.bd',
+    room: 'G-105',
+    mealsTaken: 98,
+    tokensLeft: 12,
+    rechargeHistory: [
+      { date: '2025-04-10', amount: 900 },
+      { date: '2025-03-20', amount: 1100 },
+    ],
+  },
+  {
+    id: '1703055',
+    name: 'Tanvir Hasan',
+    token: 72,
+    pin: '8765',
+    email: 'tanvir@cuet.ac.bd',
+    room: 'C-303',
+    mealsTaken: 134,
+    tokensLeft: 5,
+    rechargeHistory: [
+      { date: '2025-04-05', amount: 1500 },
+      { date: '2025-03-12', amount: 700 },
+    ],
+  },
+];
 
 export default function AdminDashboardPage() {
   const [inputId, setInputId] = useState('');
   const [student, setStudent] = useState<Student | null>(null);
   const [showView, setShowView] = useState(false);
   const [showUpdate, setShowUpdate] = useState(false);
-  const [updateForm, setUpdateForm] = useState<Student>({ ...dummyStudent });
+  const [updateForm, setUpdateForm] = useState<Student>({ ...students[0] });
   const [sidebarMode, setSidebarMode] = useState<null | 'view' | 'update'>(null);
+  const [notFound, setNotFound] = useState(false);
 
   const handleValidate = () => {
-    if (inputId === dummyStudent.id) {
-      setStudent(dummyStudent);
+    const found = students.find(s => s.id === inputId);
+    if (found) {
+      setStudent(found);
+      setNotFound(false);
     } else {
       setStudent(null);
-      alert('Student not found (dummy logic)');
+      setNotFound(true);
     }
   };
 
@@ -84,12 +116,13 @@ export default function AdminDashboardPage() {
           placeholder="Enter or scan student CUET ID"
           value={inputId}
           onChange={e => setInputId(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleValidate(); } }}
         />
         <button
           className="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={handleValidate}
         >
-          Validate
+          Search
         </button>
       </section>
       {student && (
@@ -104,6 +137,14 @@ export default function AdminDashboardPage() {
               <button className="bg-yellow-500 text-white px-3 py-1 rounded" onClick={handleUpdate}>Update</button>
               <button className="bg-red-600 text-white px-3 py-1 rounded" onClick={handleDelete}>Delete</button>
             </div>
+          </div>
+        </section>
+      )}
+      {notFound && (
+        <section className="mb-6">
+          <div className="bg-red-100 rounded p-4 flex items-center justify-between shadow">
+            <div className="font-bold text-lg text-red-700">Student not found</div>
+            <div className="text-gray-600 text-sm">No student with ID: {inputId}</div>
           </div>
         </section>
       )}
