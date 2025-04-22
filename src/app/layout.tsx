@@ -96,9 +96,14 @@ export default function RootLayout({
           </div>
         </nav>
         {/* Main Content */}
-        <main className="relative z-10 p-10">
-          {children}
+        <main className="relative z-10 p-10 min-h-[80vh] flex flex-col">
+          <div className="flex-1">
+            {children}
+          </div>
         </main>
+        <footer className="w-full text-center py-6 bg-white border-t border-slate-200 text-gray-500 text-sm mt-auto relative z-10">
+          &copy; {new Date().getFullYear()} Mahabub Arafat. All rights reserved.
+        </footer>
         <style jsx global>{`
           .nav-link {
             position: relative;
