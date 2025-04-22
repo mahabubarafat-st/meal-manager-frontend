@@ -4,6 +4,9 @@ import Image from "next/image";
 import { api } from "@/lib/utils";
 
 const TING_SOUND = "/ting.mp3";
+const BUZZ_SOUND = "/buzz.mp3";
+const WARNING_SOUND = "/ting.mp3";
+const MEAL_LOCK_HOURS = 6;
 const MENU_OPTIONS = [
   { name: "Rice", img: "/rice.jpeg" },
   { name: "Khichuri", img: "/khichuri.jpg" },
@@ -27,6 +30,7 @@ export default function HallDashboardPage() {
   const [count, setCount] = useState(0);
   const [finalMenu, setFinalMenu] = useState<string[]>([]);
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
+  const [lastMealTimes, setLastMealTimes] = useState<{ [id: string]: number }>({});
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -63,6 +67,47 @@ export default function HallDashboardPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!studentId) return;
+    // Special validation for student with id 170101 and zero tokens
+    if (studentId === "170101") {
+      setCards([
+        {
+          studentId,
+          name: "Free Khor",
+          tokensLeft: 0,
+          time: new Date().toLocaleTimeString(),
+        },
+        ...cards,
+      ]);
+      setCount(count + 1);
+      setStudentId("");
+      // Play buzz sound
+      const audio = new Audio(BUZZ_SOUND);
+      audio.play();
+      return;
+    }
+    // 6-hour lock validation for any student
+    const now = Date.now();
+    const lastTime = lastMealTimes[studentId];
+    if (lastTime && now - lastTime < MEAL_LOCK_HOURS * 60 * 60 * 1000) {
+      setCards([
+        {
+          studentId,
+          name: "John Doe",
+          tokensLeft: 30,
+          time: new Date().toLocaleTimeString(),
+          warning: true,
+        } as any,
+        ...cards,
+      ]);
+      setStudentId("");
+      // Play warning sound
+      const audio = new Audio(WARNING_SOUND);
+      audio.play();
+      return;
+    } else {
+      // Update last meal time
+      setLastMealTimes(prev => ({ ...prev, [studentId]: now }));
+    }
     const info = await fetchStudentInfo(studentId);
     setCards([
       {
@@ -101,15 +146,37 @@ export default function HallDashboardPage() {
       </div>
       <div className="flex flex-col gap-4">
         {cards.map((card, idx) => (
-          <div key={idx} className="bg-white rounded shadow p-4 border border-slate-200 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
-            <div className="flex-1">
-              <div className="font-bold text-blue-700">Student ID: {card.studentId}</div>
-              <div className="text-gray-800">Name: {card.name}</div>
-              <div className="text-green-700 font-semibold">Has taken a meal.</div>
-              <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+          card.tokensLeft === 0 && card.studentId === "170101" ? (
+            <div key={idx} className="bg-red-100 border border-red-400 text-red-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+              <div className="flex-1">
+                <div className="font-bold text-red-700">Student ID: {card.studentId}</div>
+                <div className="text-gray-800">Name: {card.name}</div>
+                <div className="font-semibold">Has tried to take a meal, but has <span className="text-red-700 font-bold">no token left</span>.</div>
+                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+              </div>
+              <div className="text-xs text-gray-500">{card.time}</div>
             </div>
-            <div className="text-xs text-gray-500">{card.time}</div>
-          </div>
+          ) : (card as any).warning ? (
+            <div key={idx} className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+              <div className="flex-1">
+                <div className="font-bold text-yellow-700">Student ID: {card.studentId}</div>
+                <div className="text-gray-800">Name: {card.name}</div>
+                <div className="font-semibold">You have taken one meal already. <span className="text-yellow-700 font-bold">Wait another 6 hours for the next meal.</span></div>
+                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+              </div>
+              <div className="text-xs text-gray-500">{card.time}</div>
+            </div>
+          ) : (
+            <div key={idx} className="bg-white rounded shadow p-4 border border-slate-200 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+              <div className="flex-1">
+                <div className="font-bold text-blue-700">Student ID: {card.studentId}</div>
+                <div className="text-gray-800">Name: {card.name}</div>
+                <div className="text-green-700 font-semibold">Has taken a meal.</div>
+                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+              </div>
+              <div className="text-xs text-gray-500">{card.time}</div>
+            </div>
+          )
         ))}
       </div>
       <button
