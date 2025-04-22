@@ -253,7 +253,13 @@ export default function AdminDashboardPage() {
         </div>
         <button
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-          onClick={() => setFinalMenu(selectedMenu)}
+          onClick={() => {
+            setFinalMenu(selectedMenu);
+            // Save to localStorage for hall-dashboard
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('finalMenu', JSON.stringify(selectedMenu));
+            }
+          }}
           disabled={selectedMenu.length === 0}
         >
           Select Menu

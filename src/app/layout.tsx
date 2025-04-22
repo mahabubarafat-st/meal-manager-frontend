@@ -66,7 +66,7 @@ export default function RootLayout({
           </div>
         </main>
         <footer className="w-full text-center py-6 bg-white border-t border-slate-200 text-gray-500 text-sm mt-auto relative z-10">
-          &copy; {new Date().getFullYear()} Mahabub Arafat. All rights reserved.
+          &copy; {new Date().getFullYear()} <a href="/creator" className="text-blue-600 hover:underline">Mahabub Arafat</a>. All rights reserved.
         </footer>
         <style jsx global>{`
           .nav-link {

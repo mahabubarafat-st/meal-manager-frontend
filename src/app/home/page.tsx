@@ -1,6 +1,6 @@
 export default function HomePage() {
   // Fake data
-  const balance = 1250.75;
+  const balance = 30;
   const mealHistory = [
     { date: "2025-04-21", meal: "Lunch", amount: 40 },
     { date: "2025-04-21", meal: "Dinner", amount: 40 },
@@ -21,7 +21,7 @@ export default function HomePage() {
       <h1 className="text-5xl font-extrabold mb-10 text-center">Home</h1>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Token Balance</h2>
-        <div className="text-3xl font-bold text-green-700">৳ {balance.toFixed(2)}</div>
+        <div className="text-3xl font-bold text-green-700"> {balance}</div>
       </section>
       <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Meal History</h2>
