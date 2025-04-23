@@ -60,7 +60,7 @@ export default function HomePage() {
         </div>
       </section>
       <div className="mt-8">
-        <a href="/recharge" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Recharge Balance</a>
+        <a href="/recharge" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Buy Token</a>
       </div>
     </div>
   );

@@ -36,7 +36,7 @@ export default function RechargePage() {
 
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded shadow">
-      <h1 className="text-5xl font-extrabold mb-10 text-center">Recharge Balance</h1>
+      <h1 className="text-5xl font-extrabold mb-10 text-center">Buy Token</h1>
       {loading ? (
         <div className="flex flex-col items-center justify-center py-12">
           <svg className="animate-spin h-10 w-10 text-blue-600 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
