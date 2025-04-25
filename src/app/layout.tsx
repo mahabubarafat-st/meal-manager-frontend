@@ -55,6 +55,9 @@ export default function RootLayout({
                 <NavigationMenuItem>
                   <Link href="/hall-dashboard" className="nav-link">Hall Dining Dashboard</Link>
                 </NavigationMenuItem>
+                <NavigationMenuItem>
+                  <Link href="/admin/hall-provost" className="nav-link">Hall Provost</Link>
+                </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
           </div>
