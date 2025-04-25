@@ -27,7 +27,7 @@ export default function StudentRegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     if (!form.id || !form.phone || !form.email || !form.pin || !form.confirmPin) {
@@ -38,12 +38,35 @@ export default function StudentRegisterPage() {
       setError("PIN and Confirm PIN do not match.");
       return;
     }
-    // Here you would send the registration data to the backend
-    // For now, just show toast and redirect to home
-    showToast("Registration successful!");
-    setTimeout(() => {
-      router.push("/login");
-    }, 1200);
+    if (!/^[0-9]{6}$/.test(form.pin)) {
+      setError("PIN must be exactly 6 digits.");
+      return;
+    }
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.id, // You may want to use a real name field
+          email: form.email,
+          pin: form.pin,
+          role: 'student',
+          // Add phone if backend supports it
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Registration failed');
+        return;
+      }
+      showToast("Registration successful!");
+      setTimeout(() => {
+        router.push("/login");
+      }, 1200);
+    } catch (err) {
+      setError("Network error. Please try again.");
+    }
   }
 
   return (
