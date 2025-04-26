@@ -1,4 +1,4 @@
-# Software Documentation for Prepaid Meal Management System
+# Software Documentation for Prepaid Meal Management System For CUET
 
 ## 1. Introduction
 

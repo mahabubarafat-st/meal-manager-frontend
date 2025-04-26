@@ -15,6 +15,7 @@ function showToast(message: string) {
 export default function StudentRegisterPage() {
   const [form, setForm] = useState({
     id: "",
+    name: "",
     phone: "",
     email: "",
     pin: "",
@@ -27,10 +28,10 @@ export default function StudentRegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!form.id || !form.phone || !form.email || !form.pin || !form.confirmPin) {
+    if (!form.id || !form.name || !form.phone || !form.email || !form.pin || !form.confirmPin) {
       setError("All fields are required.");
       return;
     }
@@ -38,12 +39,36 @@ export default function StudentRegisterPage() {
       setError("PIN and Confirm PIN do not match.");
       return;
     }
-    // Here you would send the registration data to the backend
-    // For now, just show toast and redirect to home
-    showToast("Registration successful!");
-    setTimeout(() => {
-      router.push("/login");
-    }, 1200);
+    if (!/^[0-9]{6}$/.test(form.pin)) {
+      setError("PIN must be exactly 6 digits.");
+      return;
+    }
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cuetId: form.id,
+          name: form.name,
+          email: form.email,
+          pin: form.pin,
+          role: 'student',
+          phone: form.phone,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Registration failed');
+        return;
+      }
+      showToast("Registration successful!");
+      setTimeout(() => {
+        router.push("/login");
+      }, 1200);
+    } catch (err) {
+      setError("Network error. Please try again.");
+    }
   }
 
   return (
@@ -57,6 +82,15 @@ export default function StudentRegisterPage() {
           className="border p-2 rounded w-full"
           placeholder="Student ID"
           value={form.id}
+          onChange={handleChange}
+        />
+        <label className="block text-gray-700 font-semibold">Name</label>
+        <input
+          name="name"
+          type="text"
+          className="border p-2 rounded w-full"
+          placeholder="Full Name"
+          value={form.name || ''}
           onChange={handleChange}
         />
         <label className="block text-gray-700 font-semibold">Phone Number</label>

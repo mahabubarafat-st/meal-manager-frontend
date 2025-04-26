@@ -2,40 +2,46 @@ import React from 'react';
 
 export default function AdminReportsPage() {
   // Dummy data
-  const budget = 50000;
-  const spent = 37250;
+  const budget = 960000;
+  const spent = 372500;
   const remaining = budget - spent;
   const mealsMonthly = [
-    { month: "Apr", count: 320 },
-    { month: "Mar", count: 350 },
-    { month: "Feb", count: 280 },
-    { month: "Jan", count: 320 },
-    { month: "Dec", count: 300 },
-    { month: "Nov", count: 280 },
-    { month: "Oct", count: 350 },
-    { month: "Sep", count: 300 },
-    { month: "Aug", count: 300 },
+    { month: "Apr", count: 20000 },
+    { month: "Mar", count: 22500 },
+    { month: "Feb", count: 28020 },
+    { month: "Jan", count: 12050 },
+    { month: "Dec", count: 25000 },
+    { month: "Nov", count: 28000 },
+    { month: "Oct", count: 22500 },
+    { month: "Sep", count: 18000 },
+    { month: "Aug", count: 19500 },
+    { month: "Jul", count: 22500 },
+    { month: "June", count: 18000 },
   ];
   const mealsDaily = [
-    { day: "Mon", count: 48 },
-    { day: "Tue", count: 52 },
-    { day: "Wed", count: 50 },
-    { day: "Thu", count: 47 },
-    { day: "Fri", count: 55 },
-    { day: "Sat", count: 40 },
-    { day: "Sun", count: 38 },
-    { day: "Mon", count: 48 },
-    { day: "Tue", count: 52 },
-    { day: "Wed", count: 50 },
-    { day: "Thu", count: 47 },
-    { day: "Fri", count: 55 },
-    { day: "Sat", count: 40 },
-    { day: "Sun", count: 38 },
-    { day: "Sun", count: 38 },
+    { day: "Mon", count: 480 },
+    { day: "Tue", count: 520 },
+    { day: "Wed", count: 500 },
+    { day: "Thu", count: 470 },
+    { day: "Fri", count: 550 },
+    { day: "Sat", count: 400 },
+    { day: "Sun", count: 380 },
+    { day: "Mon", count: 480 },
+    { day: "Tue", count: 520 },
+    { day: "Wed", count: 500 },
+    { day: "Thu", count: 470 },
+    { day: "Fri", count: 550 },
+    { day: "Sat", count: 400 },
+    { day: "Sun", count: 380 },
+    { day: "Sun", count: 380 },
   ];
   const avgMealPerDay = (mealsDaily.reduce((a, b) => a + b.count, 0) / mealsDaily.length).toFixed(1);
   // Dummy data for meals taken today
-  const mealsToday = 53;
+  const mealsToday = 530;
+
+  // Find max values for scaling
+  const maxMonthly = Math.max(...mealsMonthly.map(m => m.count));
+  const maxDaily = Math.max(...mealsDaily.map(d => d.count));
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 rounded shadow">
@@ -60,12 +66,12 @@ export default function AdminReportsPage() {
       </section>
       <section className="mb-8">
         <h2 className="text-lg font-semibold mb-2">Meals Taken Monthly</h2>
-        <div className="flex gap-4 items-end h-40">
+        <div className="flex gap-2 items-end h-64 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           {mealsMonthly.map((m, idx) => (
-            <div key={idx} className="flex flex-col items-center w-16">
+            <div key={idx} className="flex flex-col items-center w-14 min-w-[3.5rem]">
               <div
                 className="bg-blue-500 rounded-t w-8 transition-all"
-                style={{ height: `${m.count / 4}px` }}
+                style={{ height: `${(m.count / maxMonthly) * 220}px` }}
                 title={`${m.count} meals`}
               ></div>
               <span className="mt-2 text-sm text-gray-700">{m.month}</span>
@@ -76,12 +82,12 @@ export default function AdminReportsPage() {
       </section>
       <section className="mb-8">
         <h2 className="text-lg font-semibold mb-2">Meals Taken Daily</h2>
-        <div className="flex gap-2 items-end h-32">
+        <div className="flex gap-1 items-end h-40 overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
           {mealsDaily.map((d, idx) => (
-            <div key={idx} className="flex flex-col items-center w-10">
+            <div key={idx} className="flex flex-col items-center w-10 min-w-[2.5rem]">
               <div
                 className="bg-green-500 rounded-t w-6 transition-all"
-                style={{ height: `${d.count * 2}px` }}
+                style={{ height: `${(d.count / maxDaily) * 120}px` }}
                 title={`${d.count} meals`}
               ></div>
               <span className="mt-1 text-xs text-gray-700">{d.day}</span>

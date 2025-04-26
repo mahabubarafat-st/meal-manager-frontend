@@ -24,6 +24,10 @@ interface MealCard {
   time: string;
 }
 
+interface MealCardWithWarning extends MealCard {
+  warning?: boolean;
+}
+
 export default function HallDashboardPage() {
   const [studentId, setStudentId] = useState("");
   const [cards, setCards] = useState<MealCard[]>([]);
@@ -96,7 +100,7 @@ export default function HallDashboardPage() {
           tokensLeft: 30,
           time: new Date().toLocaleTimeString(),
           warning: true,
-        } as any,
+        } as MealCardWithWarning,
         ...cards,
       ]);
       setStudentId("");
@@ -156,7 +160,7 @@ export default function HallDashboardPage() {
               </div>
               <div className="text-xs text-gray-500">{card.time}</div>
             </div>
-          ) : (card as any).warning ? (
+          ) : (card as MealCardWithWarning).warning ? (
             <div key={idx} className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
               <div className="flex-1">
                 <div className="font-bold text-yellow-700">Student ID: {card.studentId}</div>
@@ -184,9 +188,9 @@ export default function HallDashboardPage() {
         style={{ transform: 'translateY(-50%)' }}
         onClick={() => setShowMenuSidebar(true)}
       >
-        Show Today's Menu
+        Show Today&apos;s Menu
       </button>
-      {/* Sidebar for Today's Menu */}
+      {/* Sidebar for Today&apos;s Menu */}
       {showMenuSidebar && (
         <div className="fixed top-0 right-0 h-full w-80 bg-white shadow-lg z-50 transition-transform duration-300 flex flex-col">
           <button
@@ -197,7 +201,7 @@ export default function HallDashboardPage() {
             &times;
           </button>
           <div className="p-8 pt-12 flex-1 flex flex-col items-center">
-            <h2 className="text-2xl font-bold mb-4 text-center">Today's Menu</h2>
+            <h2 className="text-2xl font-bold mb-4 text-center">Today&apos;s Menu</h2>
             <div className="flex flex-col gap-4 items-center">
               {finalMenu.length === 0 ? (
                 <span className="text-gray-500">No menu selected yet.</span>
