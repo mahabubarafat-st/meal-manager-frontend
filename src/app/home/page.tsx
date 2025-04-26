@@ -5,6 +5,8 @@ export default function HomePage() {
   const [balance, setBalance] = useState<number | null>(null);
   const [mealHistory, setMealHistory] = useState<any[]>([]);
   const [stats, setStats] = useState<any | null>(null);
+  const [transactionHistory, setTransactionHistory] = useState<any[]>([]);
+  const [showTransactions, setShowTransactions] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -30,6 +32,7 @@ export default function HomePage() {
         setBalance(data.tokens);
         setMealHistory(data.mealHistory || []);
         setStats({ ...data.stats, name: data.name, cuetId: data.cuetId });
+        setTransactionHistory(data.transactionHistory || []);
       } catch (e: any) {
         setError(e.message || 'Error loading data');
       }
@@ -89,11 +92,9 @@ export default function HomePage() {
           {(showFallback ? fallback.mealHistory : mealHistory).length === 0 && <li className="py-2 px-2 text-gray-500">No meals</li>}
           {(showFallback ? fallback.mealHistory : mealHistory).map((item, idx) => (
             <li key={idx} className="flex justify-between items-center py-2 px-2">
-              <span className="font-medium text-gray-800">{item.meal || (item.type === 'charge' ? 'Recharge' : 'Deduct')}</span>
-              <span className="text-gray-500 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : ''}</span>
-              <span className={item.amount >= 0 ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'}>
-                {item.amount >= 0 ? '+' : '-'}৳ {Math.abs(item.amount)}
-              </span>
+              <span className="font-medium text-gray-800">{item.meal}</span>
+              <span className="text-gray-500 text-sm">{item.date ? new Date(item.date).toLocaleString() : ''}</span>
+              <span className="text-green-700 font-semibold">৳ {item.amount ?? '-'}</span>
             </li>
           ))}
         </ul>
@@ -114,7 +115,7 @@ export default function HomePage() {
             <span className="text-gray-600 text-sm">Favorite Meal</span>
           </div>
           <div className="bg-pink-100 rounded p-4 flex flex-col items-center shadow-sm">
-            <span className="text-lg font-bold text-pink-700">{showFallback ? fallback.stats.lastRecharge : stats?.lastRecharge ?? '-'}</span>
+            <span className="text-lg font-bold text-pink-700">{showFallback ? fallback.stats.lastRecharge : stats?.lastRecharge ? new Date(stats.lastRecharge).toLocaleString() : '-'}</span>
             <span className="text-gray-600 text-sm">Last Recharge</span>
           </div>
           <div className="bg-yellow-100 rounded p-4 flex flex-col items-center shadow-sm col-span-2">
@@ -122,6 +123,31 @@ export default function HomePage() {
             <span className="text-gray-600 text-sm">Total Spent</span>
           </div>
         </div>
+        <div className="mt-4 flex justify-center">
+          <button
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded"
+            onClick={() => setShowTransactions((v) => !v)}
+          >
+            {showTransactions ? 'Hide' : 'Show'} Transaction History
+          </button>
+        </div>
+        {showTransactions && (
+          <div className="mt-4">
+            <h3 className="text-md font-semibold mb-2">Last 6 Transactions</h3>
+            <ul className="divide-y divide-gray-200 bg-slate-50 rounded">
+              {transactionHistory.length === 0 && <li className="py-2 px-2 text-gray-500">No transactions</li>}
+              {transactionHistory.map((item, idx) => (
+                <li key={idx} className="flex justify-between items-center py-2 px-2">
+                  <span className="font-medium text-gray-800">{item.type === 'charge' ? 'Recharge' : 'Deduct'}</span>
+                  <span className="text-gray-500 text-sm">{item.date ? new Date(item.date).toLocaleString() : ''}</span>
+                  <span className={item.type === 'charge' ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'}>
+                    {item.type === 'charge' ? '+' : '-'}৳ {item.amount}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
       <div className="mt-8 flex justify-between items-center">
         <a href="/recharge" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Buy Token</a>
