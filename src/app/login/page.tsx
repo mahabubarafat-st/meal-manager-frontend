@@ -39,6 +39,7 @@ export default function LoginPage() {
       // Save token and student info to localStorage
       localStorage.setItem('token', data.token);
       localStorage.setItem('studentId', data.student.cuetId);
+      localStorage.setItem('id', data.student.id);
       localStorage.setItem('studentName', data.student.name);
       showToast("Login successful!");
       setTimeout(() => {

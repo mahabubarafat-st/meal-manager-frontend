@@ -5,7 +5,7 @@ const TokenTransaction = require('../models/TokenTransaction');
 //TODO use a transaction in future to maintain consistency
 exports.chargeTokens = async (req, res) => {
   try {
-    const { studentId, amount } = req.body;
+    const { studentId, amount, account,paymentMethod } = req.body;
     if (!studentId || !amount) return res.status(400).json({ message: 'studentId and amount required' });
     const student = await Student.findById(studentId);
     if (!student) return res.status(404).json({ message: 'Student not found' });
@@ -27,6 +27,8 @@ exports.chargeTokens = async (req, res) => {
       amount,
       numOfTokens,
       type: 'charge',
+      account,
+      paymentMethod
     });
     await transaction.save();
     res.json({ message: 'Tokens charged', tokens: student.tokens });
