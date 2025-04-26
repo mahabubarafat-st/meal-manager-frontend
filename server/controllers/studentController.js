@@ -1,10 +1,11 @@
 const Student = require('../models/Student');
 const TokenTransaction = require('../models/TokenTransaction');
+const MealHistory = require('../models/MealHistory');
 
 // GET /api/students/:id/home
 exports.getStudentHome = async (req, res) => {
   try {
-    const student = await Student.findById(req.params.id);
+    const student = await Student.findOne({ cuetId: req.params.id });
     if (!student) return res.status(404).json({ message: 'Student not found' });
     const transactions = await TokenTransaction.find({ student: student._id })
       .sort({ createdAt: -1 })
@@ -29,10 +30,18 @@ exports.getStudentHome = async (req, res) => {
     const lastRechargeTx = await TokenTransaction.findOne({ student: student._id, type: 'charge' }).sort({ date: -1 });
     const lastRecharge = lastRechargeTx ? lastRechargeTx.date : null;
 
+    // Get meal history from MealHistory collection
+    const mealHistory = await MealHistory.find({ student: student._id })
+      .sort({ date: -1 })
+      .limit(10)
+      .select('date meal amount');
+
     res.json({
       name: student.name,
+      cuetId: student.cuetId,
       email: student.email,
       tokens: student.tokens,
+      mealHistory,
       recentTransactions: transactions,
       stats: {
         week,
@@ -40,6 +49,8 @@ exports.getStudentHome = async (req, res) => {
         favoriteMeal,
         lastRecharge,
         totalSpent: totalSpent[0]?.total || 0,
+        name: student.name,
+        cuetId: student.cuetId,
       },
     });
   } catch (err) {

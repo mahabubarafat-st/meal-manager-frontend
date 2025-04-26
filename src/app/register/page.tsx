@@ -15,6 +15,7 @@ function showToast(message: string) {
 export default function StudentRegisterPage() {
   const [form, setForm] = useState({
     id: "",
+    name: "",
     phone: "",
     email: "",
     pin: "",
@@ -30,7 +31,7 @@ export default function StudentRegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    if (!form.id || !form.phone || !form.email || !form.pin || !form.confirmPin) {
+    if (!form.id || !form.name || !form.phone || !form.email || !form.pin || !form.confirmPin) {
       setError("All fields are required.");
       return;
     }
@@ -48,11 +49,12 @@ export default function StudentRegisterPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: form.id, // You may want to use a real name field
+          cuetId: form.id,
+          name: form.name,
           email: form.email,
           pin: form.pin,
           role: 'student',
-          // Add phone if backend supports it
+          phone: form.phone,
         }),
       });
       const data = await res.json();
@@ -80,6 +82,15 @@ export default function StudentRegisterPage() {
           className="border p-2 rounded w-full"
           placeholder="Student ID"
           value={form.id}
+          onChange={handleChange}
+        />
+        <label className="block text-gray-700 font-semibold">Name</label>
+        <input
+          name="name"
+          type="text"
+          className="border p-2 rounded w-full"
+          placeholder="Full Name"
+          value={form.name || ''}
           onChange={handleChange}
         />
         <label className="block text-gray-700 font-semibold">Phone Number</label>

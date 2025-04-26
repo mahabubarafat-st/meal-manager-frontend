@@ -28,8 +28,8 @@ export default function HomePage() {
         if (!res.ok) throw new Error('Failed to fetch');
         const data = await res.json();
         setBalance(data.tokens);
-        setMealHistory(data.recentTransactions || []);
-        setStats(data.stats || {});
+        setMealHistory(data.mealHistory || []);
+        setStats({ ...data.stats, name: data.name, cuetId: data.cuetId });
       } catch (e: any) {
         setError(e.message || 'Error loading data');
       }
@@ -37,6 +37,13 @@ export default function HomePage() {
     };
     fetchData();
   }, []);
+
+  function handleLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('studentId');
+    localStorage.removeItem('studentName');
+    window.location.href = '/login';
+  }
 
   if (loading) return <div className="text-center mt-10">Loading...</div>;
 
@@ -55,6 +62,8 @@ export default function HomePage() {
       favoriteMeal: "Lunch",
       lastRecharge: "2025-04-15",
       totalSpent: 1200,
+      name: "Arafat Rahman",
+      cuetId: "17030316",
     },
   };
 
@@ -68,13 +77,20 @@ export default function HomePage() {
         <div className="text-3xl font-bold text-green-700"> {showFallback ? fallback.balance : balance}</div>
       </section>
       <section className="mb-6">
+        <h2 className="text-lg font-semibold mb-2">Student Info</h2>
+        <div className="flex flex-col gap-1 text-gray-700">
+          <span><b>Name:</b> {showFallback ? fallback.stats.name : stats?.name ?? '-'}</span>
+          <span><b>CUET ID:</b> {showFallback ? fallback.stats.cuetId : stats?.cuetId ?? '-'}</span>
+        </div>
+      </section>
+      <section className="mb-6">
         <h2 className="text-lg font-semibold mb-2">Meal History</h2>
         <ul className="divide-y divide-gray-200 bg-slate-50 rounded">
           {(showFallback ? fallback.mealHistory : mealHistory).length === 0 && <li className="py-2 px-2 text-gray-500">No meals</li>}
           {(showFallback ? fallback.mealHistory : mealHistory).map((item, idx) => (
             <li key={idx} className="flex justify-between items-center py-2 px-2">
               <span className="font-medium text-gray-800">{item.meal || (item.type === 'charge' ? 'Recharge' : 'Deduct')}</span>
-              <span className="text-gray-500 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : (item.date ? new Date(item.date).toLocaleDateString() : '')}</span>
+              <span className="text-gray-500 text-sm">{item.date ? new Date(item.date).toLocaleDateString() : ''}</span>
               <span className={item.amount >= 0 ? 'text-green-700 font-semibold' : 'text-red-700 font-semibold'}>
                 {item.amount >= 0 ? '+' : '-'}৳ {Math.abs(item.amount)}
               </span>
@@ -107,8 +123,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <div className="mt-8">
+      <div className="mt-8 flex justify-between items-center">
         <a href="/recharge" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Buy Token</a>
+        <button onClick={handleLogout} className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Logout</button>
       </div>
     </div>
   );

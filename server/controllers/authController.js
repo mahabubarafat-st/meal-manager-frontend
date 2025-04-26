@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // POST /api/auth/register
 exports.register = async (req, res) => {
   try {
-    const { name, cuetId, email, pin, role } = req.body;
+    const { name, cuetId, email, pin, role, phone } = req.body;
     console.log(req.body);
     if (!/^[0-9]{6}$/.test(pin)) {
       return res.status(400).json({ message: 'PIN must be 6 digits' });
@@ -14,7 +14,7 @@ exports.register = async (req, res) => {
     const existing = await Student.findOne({ cuetId });
     if (existing) return res.status(400).json({ message: 'CUET ID already registered' });
     const hashedPin = await bcrypt.hash(pin, 10);
-    const student = await Student.create({ name, cuetId, email, pin: hashedPin, role });
+    const student = await Student.create({ name, cuetId, email, pin: hashedPin, role, phoneNumber: phone });
     res.status(201).json({ message: 'Registration successful', student: { id: student._id, name, cuetId, email, role } });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
