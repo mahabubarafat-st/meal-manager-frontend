@@ -54,11 +54,14 @@ export default function RechargePage() {
         setLoading(false);
         return;
       }
-      setLoading(false);
-      setSuccess(true);
+      // Show loader for 4 seconds, then success for 3 seconds, then redirect
       setTimeout(() => {
-        window.location.href = '/home';
-      }, 1500);
+        setLoading(false);
+        setSuccess(true);
+        setTimeout(() => {
+          window.location.href = '/home';
+        }, 3000);
+      }, 4000);
     } catch (err) {
       alert('Network error. Please try again.');
       setLoading(false);
