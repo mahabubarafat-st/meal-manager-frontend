@@ -45,6 +45,7 @@ export default function HomePage() {
     localStorage.removeItem('token');
     localStorage.removeItem('studentId');
     localStorage.removeItem('studentName');
+    localStorage.removeItem('id');
     window.location.href = '/login';
   }
 

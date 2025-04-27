@@ -1,52 +1,45 @@
 const MealHistory = require('../models/MealHistory');
 
-// CREATE meal history
-// exports.createMealHistory = async (req, res) => {
-//   try {
-//     const { student, cuetId, date, meal } = req.body;
-//     if (!student || !cuetId || !date || !meal) {
-//       return res.status(400).json({ message: 'student, cuetId, date, and meal are required' });
-//     }
-//     const mealHistory = await MealHistory.create({ student, cuetId, date, meal });
-//     res.status(201).json(mealHistory);
-//   } catch (err) {
-//     res.status(500).json({ message: 'Server error', error: err.message });
-//   }
-// };
-
 // TAKE a meal (refined createMealHistory)
 exports.takeAMeal = async (req, res) => {
   try {
-    const { student, cuetId, meal } = req.body;
-    if (!student || !cuetId || !meal) {
-      return res.status(400).json({ message: 'student, cuetId, and meal are required' });
+    const { cuetId, meal } = req.body;
+    if (!cuetId || !meal) {
+      return res.status(400).json({errorType:'warning', message: 'cuetId and meal are required' });
     }
     // Use server time for meal entry
     const mealDate = new Date();
+    // Find student by cuetId
+    const Student = require('../models/Student');
+    const studentDoc = await Student.findOne({ cuetId });
+    if (!studentDoc) return res.status(404).json({ errorType:'warning', message: 'Student not found' });
     // Check last meal entry for this student
-    const lastMeal = await MealHistory.findOne({ student }).sort({ date: -1 });
+    const lastMeal = await MealHistory.findOne({ student: studentDoc._id }).sort({ date: -1 });
     if (lastMeal) {
       const lastTime = new Date(lastMeal.date).getTime();
       const now = mealDate.getTime();
       const diffHours = Math.abs(now - lastTime) / (1000 * 60 * 60);
       if (diffHours < 6) {
-        return res.status(400).json({ message: 'You can only take a meal every 6 hours.' });
+        return res.status(400).json({errorType:'warning', message: 'You can only take a meal every 6 hours.' });
       }
     }
-    // Find student and check tokens
-    const Student = require('../models/Student');
-    const studentDoc = await Student.findById(student);
-    if (!studentDoc) return res.status(404).json({ message: 'Student not found' });
     if (studentDoc.tokens <= 0) {
-      return res.status(400).json({ message: 'Not enough tokens to take a meal.' });
+      return res.status(400).json({ errorType:'danger',message: 'Not enough tokens to take a meal.' });
     }
     studentDoc.tokens -= 1;
     await studentDoc.save();
     // Create meal history entry with server date
-    const mealHistory = await MealHistory.create({ student, cuetId, date: mealDate, meal });
-    res.status(201).json(mealHistory);
+    const mealHistory = await MealHistory.create({ student: studentDoc._id, cuetId, date: mealDate, meal });
+    // Populate student info (excluding sensitive fields)
+    const populatedMeal = await MealHistory.findById(mealHistory._id).populate('student', '-pin -__v -createdAt -updatedAt');
+    // Flatten the response: send all meal fields at root, and student as student object
+    const flatMeal = {
+      ...populatedMeal.toObject(),
+      student: populatedMeal.student
+    };
+    res.status(201).json(flatMeal);
   } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({errorType:'danger', message: 'Server error', error: err.message });
   }
 };
 

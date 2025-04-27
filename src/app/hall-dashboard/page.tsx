@@ -22,10 +22,9 @@ interface MealCard {
   name: string;
   tokensLeft: number;
   time: string;
-}
-
-interface MealCardWithWarning extends MealCard {
   warning?: boolean;
+  danger?: boolean;
+  message?: string;
 }
 
 export default function HallDashboardPage() {
@@ -35,6 +34,9 @@ export default function HallDashboardPage() {
   const [finalMenu, setFinalMenu] = useState<string[]>([]);
   const [showMenuSidebar, setShowMenuSidebar] = useState(false);
   const [lastMealTimes, setLastMealTimes] = useState<{ [id: string]: number }>({});
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -43,90 +45,110 @@ export default function HallDashboardPage() {
     }
   }, []);
 
-  // Dummy name/token generator
-  function getStudentInfo(id: string) {
-    // In real app, fetch from backend
-    const names = ["John Doe", "Jane Smith", "Alice Rahman", "Bob Hasan", "Sara Akter", "Imran Khan", "Mitu Das"];
-    const idx = parseInt(id.slice(-1)) % names.length;
-    return {
-      name: names[idx],
-      tokensLeft: 30 - (cards.length % 31),
-    };
+  // Fetch today's meal history with pagination
+  async function fetchMealHistory(pageNum: number) {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const today = new Date().toISOString().slice(0, 10);
+      const res = await fetch(`${apiUrl}/api/meal-history?date=${today}&page=${pageNum}&limit=10`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setCards(
+        data.mealHistories.map((entry: any) => ({
+          studentId: entry.cuetId,
+          name: entry.student?.name || "Unknown",
+          tokensLeft: entry.student?.tokens ?? 0,
+          time: new Date(entry.date).toLocaleTimeString(),
+        }))
+      );
+      setCount(data.totalCount || 0);
+      setPage(pageNum);
+      setTotalPages(data.totalPages || 1);
+    } catch {
+      // fallback error
+      setCards([]);
+    }
+    setLoading(false);
   }
 
-  // Add backend integration for student info
-  async function fetchStudentInfo(id: string) {
-    try {
-      const res = await api.get(`/students/${id}`);
-      return {
-        name: res.data.name,
-        tokensLeft: res.data.tokensLeft,
-      };
-    } catch {
-      // fallback to dummy data
-      return getStudentInfo(id);
-    }
-  }
+  useEffect(() => {
+    fetchMealHistory(1);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!studentId) return;
-    // Special validation for student with id 170101 and zero tokens
-    if (studentId === "170101") {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const now = new Date();
+      const hour = now.getHours();
+      const mealType = (hour >= 12 && hour < 15) ? "Lunch" : "Dinner";
+      const res = await fetch(`${apiUrl}/api/meal-history`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          cuetId: studentId,
+          meal: mealType
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        // Handle errorType from backend
+        setCards([
+          {
+            studentId,
+            name: data?.student?.name || "Unknown",
+            tokensLeft: data?.student?.tokens ?? 0,
+            time: new Date().toLocaleTimeString(),
+            warning: data.errorType === 'warning',
+            danger: data.errorType === 'danger',
+            message: data.message,
+          },
+          ...cards,
+        ]);
+        setStudentId("");
+        const audio = new Audio(data.errorType === 'danger' ? BUZZ_SOUND : WARNING_SOUND);
+        audio.play();
+        setLoading(false);
+        return;
+      }
+      // On success, use backend response to make the card
       setCards([
         {
-          studentId,
-          name: "Free Khor",
-          tokensLeft: 0,
-          time: new Date().toLocaleTimeString(),
+          studentId: data.student.cuetId,
+          name: data.student.name,
+          tokensLeft: data.student.tokens,
+          time: new Date(data.date).toLocaleTimeString(),
         },
         ...cards,
       ]);
-      setCount(count + 1);
+      fetchMealHistory(1);
       setStudentId("");
-      // Play buzz sound
-      const audio = new Audio(BUZZ_SOUND);
+      const audio = new Audio(TING_SOUND);
       audio.play();
-      return;
-    }
-    // 6-hour lock validation for any student
-    const now = Date.now();
-    const lastTime = lastMealTimes[studentId];
-    if (lastTime && now - lastTime < MEAL_LOCK_HOURS * 60 * 60 * 1000) {
+    } catch {
       setCards([
         {
           studentId,
-          name: "John Doe",
-          tokensLeft: 30,
+          name: "Error",
+          tokensLeft: 0,
           time: new Date().toLocaleTimeString(),
-          warning: true,
-        } as MealCardWithWarning,
+          danger: true,
+          message: "Network error. Please try again.",
+        },
         ...cards,
       ]);
       setStudentId("");
-      // Play warning sound
-      const audio = new Audio(WARNING_SOUND);
-      audio.play();
-      return;
-    } else {
-      // Update last meal time
-      setLastMealTimes(prev => ({ ...prev, [studentId]: now }));
     }
-    const info = await fetchStudentInfo(studentId);
-    setCards([
-      {
-        studentId,
-        name: info.name,
-        tokensLeft: info.tokensLeft,
-        time: new Date().toLocaleTimeString(),
-      },
-      ...cards,
-    ]);
-    setCount(count + 1);
-    setStudentId("");
-    // Play ting sound
-    const audio = new Audio(TING_SOUND);
-    audio.play();
+    setLoading(false);
   }
 
   return (
@@ -149,39 +171,61 @@ export default function HallDashboardPage() {
         <div className="text-lg font-semibold text-green-700">Meals taken today: <span className="font-bold">{count}</span></div>
       </div>
       <div className="flex flex-col gap-4">
-        {cards.map((card, idx) => (
-          card.tokensLeft === 0 && card.studentId === "170101" ? (
-            <div key={idx} className="bg-red-100 border border-red-400 text-red-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
-              <div className="flex-1">
-                <div className="font-bold text-red-700">Student ID: {card.studentId}</div>
-                <div className="text-gray-800">Name: {card.name}</div>
-                <div className="font-semibold">Has tried to take a meal, but has <span className="text-red-700 font-bold">no token left</span>.</div>
-                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+        {loading ? (
+          <div className="text-center text-blue-600 font-semibold">Loading...</div>
+        ) : (
+          cards.map((card, idx) => (
+            card.danger ? (
+              <div key={idx} className="bg-red-100 border border-red-400 text-red-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+                <div className="flex-1">
+                  <div className="font-bold text-red-700">Student ID: {card.studentId}</div>
+                  <div className="text-gray-800">Name: {card.name}</div>
+                  <div className="font-semibold">{card.message || 'Has tried to take a meal, but has no token left.'}</div>
+                  <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+                </div>
+                <div className="text-xs text-gray-500">{card.time}</div>
               </div>
-              <div className="text-xs text-gray-500">{card.time}</div>
-            </div>
-          ) : (card as MealCardWithWarning).warning ? (
-            <div key={idx} className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
-              <div className="flex-1">
-                <div className="font-bold text-yellow-700">Student ID: {card.studentId}</div>
-                <div className="text-gray-800">Name: {card.name}</div>
-                <div className="font-semibold">You have taken one meal already. <span className="text-yellow-700 font-bold">Wait another 6 hours for the next meal.</span></div>
-                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+            ) : card.warning ? (
+              <div key={idx} className="bg-yellow-100 border border-yellow-400 text-yellow-800 rounded shadow p-4 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+                <div className="flex-1">
+                  <div className="font-bold text-yellow-700">Student ID: {card.studentId}</div>
+                  <div className="text-gray-800">Name: {card.name}</div>
+                  <div className="font-semibold">{card.message || 'You have taken one meal already. Wait another 6 hours for the next meal.'}</div>
+                  <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+                </div>
+                <div className="text-xs text-gray-500">{card.time}</div>
               </div>
-              <div className="text-xs text-gray-500">{card.time}</div>
-            </div>
-          ) : (
-            <div key={idx} className="bg-white rounded shadow p-4 border border-slate-200 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
-              <div className="flex-1">
-                <div className="font-bold text-blue-700">Student ID: {card.studentId}</div>
-                <div className="text-gray-800">Name: {card.name}</div>
-                <div className="text-green-700 font-semibold">Has taken a meal.</div>
-                <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+            ) : (
+              <div key={idx} className="bg-white rounded shadow p-4 border border-slate-200 flex flex-col md:flex-row md:items-center md:gap-8 gap-2">
+                <div className="flex-1">
+                  <div className="font-bold text-blue-700">Student ID: {card.studentId}</div>
+                  <div className="text-gray-800">Name: {card.name}</div>
+                  <div className="text-green-700 font-semibold">Has taken a meal.</div>
+                  <div className="text-gray-600 text-sm">Token left: {card.tokensLeft}</div>
+                </div>
+                <div className="text-xs text-gray-500">{card.time}</div>
               </div>
-              <div className="text-xs text-gray-500">{card.time}</div>
-            </div>
-          )
-        ))}
+            )
+          ))
+        )}
+      </div>
+      {/* Pagination controls */}
+      <div className="flex justify-center gap-2 mt-4">
+        <button
+          disabled={page <= 1}
+          onClick={() => fetchMealHistory(page - 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          Prev
+        </button>
+        <span>Page {page} of {totalPages}</span>
+        <button
+          disabled={page >= totalPages}
+          onClick={() => fetchMealHistory(page + 1)}
+          className="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300"
+        >
+          Next
+        </button>
       </div>
       <button
         className="fixed top-1/2 right-0 z-40 bg-blue-600 text-white px-4 py-2 rounded-l hover:bg-blue-700 transition"
