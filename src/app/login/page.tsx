@@ -23,16 +23,31 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    // Dummy login logic
-    if (studentId === "1703037" && pin === "123456") {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+      const res = await fetch(`${apiUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cuetId: studentId, pin }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.message || 'Invalid CUET ID or PIN');
+        setLoading(false);
+        return;
+      }
+      // Save token and student info to localStorage
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('studentId', data.student.cuetId);
+      localStorage.setItem('id', data.student.id);
+      localStorage.setItem('studentName', data.student.name);
       showToast("Login successful!");
       setTimeout(() => {
         router.push("/home");
       }, 1200);
-      setLoading(false);
-      return;
+    } catch (err) {
+      setError("Network error. Please try again.");
     }
-    setError("Invalid CUET ID or PIN");
     setLoading(false);
   }
 
@@ -63,7 +78,6 @@ export default function LoginPage() {
           name="pin"
           type="password"
           inputMode="numeric"
-        //   pattern="\\d{6}"
           maxLength={6}
           minLength={6}
           className="border p-2 rounded"
